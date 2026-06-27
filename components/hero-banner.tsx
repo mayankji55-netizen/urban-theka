@@ -59,26 +59,26 @@ export function HeroBanner({
 
       {/* Top Header */}
       <div className="mx-auto max-w-4xl px-4 pt-4">
-        <div className="flex items-center gap-4 rounded-3xl bg-white px-5 py-4 shadow-lg">
+        <div className="flex flex-wrap items-center gap-3 rounded-3xl bg-white px-4 py-4 shadow-lg md:flex-nowrap md:gap-4 md:px-5">
 
           {/* Logo */}
           <Image
             src="/images/LOGO.png"
             alt="Urban Theka"
-            width={52}
-            height={52}
+            width={40}
+            height={40}
             className="rounded-full"
             priority
           />
 
           {/* Brand */}
-          <h1 className="text-2xl font-black tracking-wide">
+          <h1 className="text-lg font-black tracking-wide md:text-2xl">
             <span className="text-black">URBAN</span>{" "}
             <span className="text-[#F59E0B]">THEKA</span>
           </h1>
 
           {/* Search */}
-          <div className="relative ml-auto flex-1 max-w-md">
+          <div className="order-3 w-full md:order-none md:ml-auto md:max-w-md md:flex-1">
             <Search
               size={18}
               className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"
@@ -169,7 +169,7 @@ export function HeroBanner({
           {/* Cart */}
           <button
   onClick={onCartClick}
-  className="relative flex items-center gap-2 rounded-full bg-[#F59E0B] px-5 py-2 font-semibold text-white transition hover:bg-orange-600"
+  className="relative flex items-center gap-2 rounded-full bg-[#F59E0B] px-3 py-2 md:px-5 font-semibold text-white transition hover:bg-orange-600"
 >
 
   <ShoppingBag size={20} />
