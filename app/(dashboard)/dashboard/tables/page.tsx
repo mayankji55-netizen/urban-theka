@@ -38,14 +38,9 @@ export default async function TablesPage() {
         </div>
 
         {/* Regenerate All */}
-        <form action={regenerateAllQrCodes}>
-          <Button
-            type="submit"
-            variant="outline"
-          >
-            🔄 Regenerate All QR Codes
-          </Button>
-        </form>
+        <div className="rounded bg-red-600 px-4 py-2 text-white">
+  TEST
+</div>
 
       </div>
 
