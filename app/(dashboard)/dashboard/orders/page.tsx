@@ -5,6 +5,8 @@ import { Card, CardContent } from "@/components/ui/card";
 import { getActiveRestaurant } from "@/lib/auth";
 import { currency } from "@/lib/utils";
 import { orderStatuses } from "@/lib/validators/order";
+import OrdersClient from "@/components/orders-client";
+import CountdownTimer from "@/components/countdown-timer";
 
 export default async function OrdersPage() {
   const active = await getActiveRestaurant();
@@ -18,6 +20,7 @@ export default async function OrdersPage() {
 
   return (
     <div className="space-y-6">
+      <OrdersClient restaurantId={active.restaurant.id} />
       <h1 className="text-3xl font-bold">Orders</h1>
       <div className="space-y-4">
         {(orders ?? []).map((order) => (
@@ -32,6 +35,12 @@ export default async function OrdersPage() {
                   <p className="text-sm text-muted-foreground">
                     Table {order.tables?.table_number ?? "Manual"} · {order.customer_name} · {currency(Number(order.total))}
                   </p>
+                  {["ACCEPTED", "PREPARING", "READY"].includes(order.status) && (
+  <CountdownTimer
+    acceptedAt={order.accepted_at}
+    estimatedMinutes={order.estimated_minutes}
+  />
+)}
                   <p className="mt-2 text-sm">
                     {order.order_items.map((item: { quantity: number; item_name: string }) => `${item.quantity}x ${item.item_name}`).join(", ")}
                   </p>
