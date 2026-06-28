@@ -17,6 +17,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { currency } from "@/lib/utils";
 import { useCartStore } from "@/store/cart-store";
+import PaymentDialog from "@/components/payment-dialog";
 import { HeroBanner } from "@/components/hero-banner";
 const categoryImages: Record<string, string> = {
   Wraps: "/images/categories/wraps.png",
@@ -75,7 +76,8 @@ export function CustomerMenuApp({
   const [discountAmount, setDiscountAmount] = useState(0);
   const [activeCoupon, setActiveCoupon] = useState<any>(null);
   const [pending, setPending] = useState(false);
-
+  const [paymentMethod, setPaymentMethod] =
+  useState<"COD" | "ONLINE">("COD");
   const { items: cart, addItem, updateQuantity, clear } = useCartStore();
   
   const cartCount = cart.reduce(
@@ -105,7 +107,9 @@ if (!/^\d{10}$/.test(phone)) {
   toast.error("Enter valid 10 digit mobile number");
   return;
 }
-  setPending(true);
+  if (pending) return;
+
+setPending(true);
 
   const result = await createOrderAction({
     restaurant_id: restaurant.id,
@@ -128,6 +132,7 @@ coupon_code: couponCode,
   }
 
   clear();
+  setPending(false);
 
   if ((result as any)?.whatsappUrl) {
     window.open((result as any).whatsappUrl, "_blank");
@@ -135,6 +140,7 @@ coupon_code: couponCode,
 
   if (result?.orderId) {
   console.log("Order ID:", result.orderId);
+  setCheckoutOpen(false);
   router.push(`/track/${result.orderId}`);
 } else {
   console.error("Order result:", result);
@@ -253,6 +259,7 @@ coupon_code: couponCode,
               <div className="flex justify-between"><span>Service charge</span><span>{currency(service)}</span></div>
               <div className="flex justify-between text-base font-bold"><span>Total</span><span>{currency(total)}</span></div>
             </div>
+            
             <form action={submit} className="space-y-3">
               <Input name="customer_name" placeholder="Your name" required />
               <Input
@@ -303,7 +310,21 @@ setDiscountAmount(Number(coupon.discount_value || 0));
   </p>
 )}
               <Textarea name="notes" placeholder="Less spicy, no onion, extra cheese..." />
-              <Button className="h-12 w-full bg-green-600 font-bold text-white hover:bg-green-700" disabled={pending}>{pending ? "Placing order..." : "Place order"}</Button>
+             <PaymentDialog
+  amount={total}
+  onCod={async () => {
+    if (pending) return;
+    const form = document.querySelector("form") as HTMLFormElement;
+
+    await submit(new FormData(form));
+  }}
+  onSuccess={async () => {
+    if (pending) return;
+    const form = document.querySelector("form") as HTMLFormElement;
+
+    await submit(new FormData(form));
+  }}
+/>
             </form>
           </div>
         </div>

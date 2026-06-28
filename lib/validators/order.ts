@@ -2,10 +2,12 @@ import { z } from "zod";
 import type { OrderStatus } from "@/types/database";
 
 export const orderStatuses = [
+  "NEW",
   "ACCEPTED",
   "PREPARING",
   "READY",
-  "DELIVERED"
+  "DELIVERED",
+  "CANCELLED",
 ] as const;
 export const checkoutSchema = z.object({
   restaurant_id: z.string().uuid(),
@@ -27,5 +29,6 @@ coupon_code: z.string().optional(),
 export const statusSchema = z.object({
   order_id: z.string().uuid(),
   restaurant_id: z.string().uuid(),
-  status: z.enum(orderStatuses)
+  status: z.enum(orderStatuses),
+  estimated_minutes: z.number().optional(),
 });

@@ -17,7 +17,9 @@ export function OrderTracker({ orderId, initialStatus }: { orderId: string; init
       .on("postgres_changes", { event: "UPDATE", schema: "public", table: "orders", filter: `id=eq.${orderId}` }, (payload) => {
         setStatus((payload.new as { status: OrderStatus }).status);
       })
-      .subscribe();
+      .subscribe((status) => {
+  console.log("Track Realtime:", status);
+});
 
     return () => {
       supabase.removeChannel(channel);

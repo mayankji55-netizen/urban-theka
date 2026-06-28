@@ -71,7 +71,7 @@ const finalTotal = total - discount;
       tax,
       service_charge,
       total: finalTotal,
-      status: "ACCEPTED"
+      status: "NEW"
     })
     .select("*")
     .single();
@@ -114,11 +114,15 @@ return {
 
 export async function updateOrderStatusAction(input: unknown) {
   const parsed = statusSchema.safeParse(input);
-  if (!parsed.success) {
-    return { error: parsed.error.errors[0]?.message ?? "Invalid status" };
-  }
+  const estimatedMinutes =
+  (input as any).estimated_minutes ?? 15;
 
-  const { supabase } = await requireUser();
+if (!parsed.success) {
+  return {
+    error: parsed.error.errors[0]?.message ?? "Invalid status",
+  };
+}
+const { supabase } = await requireUser();
 
   // Current status fetch karo
   const { data: order } = await supabase
@@ -133,19 +137,33 @@ export async function updateOrderStatusAction(input: unknown) {
   }
 
   // Sirf next status allow karo
-  const allowedTransitions: Record<string, string> = {
-    ACCEPTED: "PREPARING",
-    PREPARING: "READY",
-    READY: "DELIVERED",
-  };
+  const allowedTransitions: Record<string, string[]> = {
+  NEW: ["ACCEPTED", "CANCELLED"],
+  ACCEPTED: ["PREPARING"],
+  PREPARING: ["READY"],
+  READY: ["DELIVERED"],
+};
 
-  if (allowedTransitions[order.status] !== parsed.data.status) {
+  if (
+  !allowedTransitions[order.status]?.includes(parsed.data.status)
+) {
     return { error: "Invalid status transition" };
   }
 
   const { error } = await supabase
     .from("orders")
-    .update({ status: parsed.data.status })
+    .update({
+  status: parsed.data.status,
+  estimated_minutes: estimatedMinutes,
+  accepted_at:
+    parsed.data.status === "ACCEPTED"
+      ? new Date().toISOString()
+      : null,
+  rejected_at:
+    parsed.data.status === "CANCELLED"
+      ? new Date().toISOString()
+      : null,
+})
     .eq("id", parsed.data.order_id)
     .eq("restaurant_id", parsed.data.restaurant_id);
 

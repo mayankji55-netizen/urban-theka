@@ -6,7 +6,10 @@ export function cn(...inputs: ClassValue[]) {
 }
 
 export function currency(value: number) {
-  return new Intl.NumberFormat("en-IN", { style: "currency", currency: "INR" }).format(value);
+  return new Intl.NumberFormat("en-IN", {
+    style: "currency",
+    currency: "INR",
+  }).format(value);
 }
 
 export function slugify(value: string) {
@@ -17,10 +20,6 @@ export function slugify(value: string) {
     .replace(/^-+|-+$/g, "");
 }
 
-export function customerMenuUrl(slug: string, tableNumber: number) {
-  const baseUrl =
-    process.env.NEXT_PUBLIC_APP_URL ||
-    "https://urban-theka-od44kpqiu-ut-team.vercel.app";
-
-  return `${baseUrl}/r/${slug}/table/${tableNumber}`;
+export function customerMenuUrl(baseUrl: string, slug: string, qrToken: string) {
+  return `${baseUrl}/r/${slug}/table/${qrToken}`;
 }
