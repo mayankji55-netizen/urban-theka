@@ -20,7 +20,10 @@ export default async function OrdersPage() {
 
   return (
     <div className="space-y-6">
-      <OrdersClient restaurantId={active.restaurant.id} />
+      <OrdersClient
+  restaurantId={active.restaurant.id}
+  orders={orders ?? []}
+/>
       <h1 className="text-3xl font-bold">Orders</h1>
       <div className="space-y-4">
         {(orders ?? []).map((order) => (
