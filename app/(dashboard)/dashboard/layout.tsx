@@ -8,6 +8,10 @@ export default async function DashboardLayout({
   children: React.ReactNode;
 }) {
   const active = await getActiveRestaurant();
+  if (!active) {
+    return null;
+  }
+  
   return (
     <DashboardShell>
       <NewOrderPopup restaurantId={active.restaurant.id} />
